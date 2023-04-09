@@ -38,6 +38,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Api(tags = "获取情感")
 @RestController
 @Slf4j
+@CrossOrigin
 @RequestMapping(value = "/api/emotion")
 public class GPTController {
 
@@ -112,31 +113,105 @@ public class GPTController {
     HashMap<String, Object> objectObjectHashMap = new HashMap<>();
     try {
       JSONObject entries = JSONUtil.parseObj(content);
-      Set<Entry<String, Object>> entries1 = entries.entrySet();
+      String emo = null;
+      String musicName = null;
+      if (content.contains("情感词")) {
+        Object emotionkey = entries.get("情感词");
+        emo = emotionkey.toString();
 
-      for (Entry<String, Object> stringObjectEntry : entries1) {
-        String key = stringObjectEntry.getKey();
+        Object music = entries.get("文件名");
+        if (music.toString().contains("[")) {
+          JSONArray objects = JSONUtil.parseArray(music);
+          ArrayList<String> strings = new ArrayList<>();
+          for (Object object : objects) {
+            String s = object.toString();
+            strings.add(s);
+          }
+          musicName = StringUtils.join(strings, ",");
+        } else {
+          musicName = music.toString();
+        }
+      } else {
+        Set<Entry<String, Object>> entries1 = entries.entrySet();
+        for (Entry<String, Object> stringObjectEntry : entries1) {
+          emo = stringObjectEntry.getKey();
 
-        Object value = stringObjectEntry.getValue();
-        JSONArray objects = JSONUtil.parseArray(value);
+          Object music = stringObjectEntry.getValue();
+          if (music.toString().contains("[")) {
+            JSONArray objects = JSONUtil.parseArray(music);
+            ArrayList<String> strings = new ArrayList<>();
+            for (Object object : objects) {
+              String s = object.toString();
+              strings.add(s);
+            }
+            musicName = StringUtils.join(strings, ",");
+          } else {
+            musicName = music.toString();
+          }
+        }
+      }
+      System.out.println(emo);
+      System.out.println(musicName);
+
+      objectObjectHashMap.put("emotion", emo);
+      objectObjectHashMap.put("musicname", musicName);
+    } catch (Exception e) {
+      log.error(e.getMessage(), e);
+      objectObjectHashMap.put("emotion", "中性");
+      objectObjectHashMap.put("musicname", "平和01.mp3");
+    }
+
+    return ResponseEntity.ok(objectObjectHashMap);
+  }
+
+  public static void main(String[] args) {
+    // String content = "{\"情感词\":\"开心\",\"文件名\":[\"愉悦02.mp3\",\"愉悦03.mp3\"]}";
+    // String content = "{\"愉悦\":\"愉悦02.mp3\"}";
+    String content = "{\"愉悦\":[\"愉悦02.mp3\"]}";
+
+    HashMap<String, Object> objectObjectHashMap = new HashMap<>();
+    JSONObject entries = JSONUtil.parseObj(content);
+    String emo = null;
+    String musicName = null;
+    if (content.contains("情感词")) {
+      Object emotionkey = entries.get("情感词");
+      emo = emotionkey.toString();
+
+      Object music = entries.get("文件名");
+      if (music.toString().contains("[")) {
+        JSONArray objects = JSONUtil.parseArray(music);
         ArrayList<String> strings = new ArrayList<>();
         for (Object object : objects) {
           String s = object.toString();
           strings.add(s);
         }
-        String musicName = StringUtils.join(strings, ",");
-        System.out.println(musicName);
-        String s = objects.toString();
-
-        objectObjectHashMap.put("emotion", key);
-        objectObjectHashMap.put("musicname", s);
+        musicName = StringUtils.join(strings, ",");
+      } else {
+        musicName = music.toString();
       }
-    } catch (Exception e) {
-      log.error(e.getMessage(), e);
-      objectObjectHashMap.put("emotion", "中性");
-      objectObjectHashMap.put("musicname", "中性01.mp3");
-    }
+    } else {
+      Set<Entry<String, Object>> entries1 = entries.entrySet();
+      for (Entry<String, Object> stringObjectEntry : entries1) {
+        emo = stringObjectEntry.getKey();
 
-    return ResponseEntity.ok(objectObjectHashMap);
+        Object music = stringObjectEntry.getValue();
+        if (music.toString().contains("[")) {
+          JSONArray objects = JSONUtil.parseArray(music);
+          ArrayList<String> strings = new ArrayList<>();
+          for (Object object : objects) {
+            String s = object.toString();
+            strings.add(s);
+          }
+          musicName = StringUtils.join(strings, ",");
+        } else {
+          musicName = music.toString();
+        }
+      }
+    }
+    System.out.println(emo);
+    System.out.println(musicName);
+
+    objectObjectHashMap.put("emotion", emo);
+    objectObjectHashMap.put("musicname", musicName);
   }
 }

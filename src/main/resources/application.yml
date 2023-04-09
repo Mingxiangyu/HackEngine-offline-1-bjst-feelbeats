@@ -32,5 +32,5 @@ system:
     linux:
       /opt/deploy/emotion/img/
   gpt:
-    apiKey: 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
+    apiKey: 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
     apiHost: https://iglens.xyz/

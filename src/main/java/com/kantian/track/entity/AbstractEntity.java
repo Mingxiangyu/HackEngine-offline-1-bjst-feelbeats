@@ -1,7 +1,7 @@
 package com.kantian.track.entity;
 
 import java.io.Serializable;
-import java.time.Instant;
+import java.util.Date;
 import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -30,13 +30,13 @@ public class AbstractEntity implements Serializable {
      * 创建时间
      */
     @CreatedDate
-    private Instant createStamp;
+    private Date createDate;
 
     /**
      * 修改时间
      */
     @LastModifiedDate
-    private Instant modifyStamp;
+    private Date updateDate;
 
     @Version
     private Integer version;

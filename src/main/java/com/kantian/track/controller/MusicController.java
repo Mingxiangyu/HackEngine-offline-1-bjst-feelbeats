@@ -13,7 +13,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -23,12 +25,16 @@ import org.springframework.web.bind.annotation.RestController;
 @Api(tags = {"响应音乐文件"})
 @Slf4j
 @RestController
+@CrossOrigin
+@RequestMapping(value = "/api")
 public class MusicController {
 
   @Operation(summary = "音乐流")
   @GetMapping(value = "/music", name = "音乐流")
   public ResponseEntity<CardDto> getHarbourImage(
       @RequestParam String fileName, HttpServletResponse response) {
+    response.setContentType("audio/mp3");
+
     if (log.isDebugEnabled()) {
       log.debug("参数 --> param:{}", fileName);
     }

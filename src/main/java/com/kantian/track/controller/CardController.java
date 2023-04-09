@@ -20,9 +20,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -32,6 +34,8 @@ import org.springframework.web.multipart.MultipartFile;
 @Api(tags = {"保存卡片"})
 @RestController
 @Slf4j
+@CrossOrigin
+@RequestMapping(value = "/api")
 public class CardController {
 
   @Value("${system.imgpath.win:}")
@@ -76,7 +80,7 @@ public class CardController {
       log.debug("参数 --> param:{}", imgPath);
     }
     if (imgPath.isEmpty()) {
-      System.out.println("请选择图片");
+      throw new RuntimeException("请选择图片！");
     }
     String imgFolder = null;
     //Windows操作系统
@@ -115,7 +119,7 @@ public class CardController {
   }
 
   @PostMapping(value = "/fileUpload")
-  public String fileUpload(@RequestPart(value = "file") MultipartFile file) {
+  public String fileUpload(@RequestParam(value = "file") MultipartFile file) {
     if (file.isEmpty()) {
       System.out.println("请选择图片");
     }

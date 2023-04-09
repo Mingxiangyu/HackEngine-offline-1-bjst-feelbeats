@@ -2,7 +2,7 @@ package com.kantian.track.support;
 
 /** @author xming */
 public interface TrackConstants {
-  
+
   String systemContent = "我想让你充当情感分析专家，我告诉你一些文件名和它们所代表的情感词，你需要记住它们！后续我们交流时，你可以返回与我们交流内容情感最接近的文件名。";
 
   String contrast =
