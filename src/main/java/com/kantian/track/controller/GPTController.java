@@ -1,7 +1,8 @@
 package com.kantian.track.controller;
 
-import static com.kantian.track.support.TrackConstants.systemContent;
+import static com.kantian.track.support.TrackConstants.all;
 
+import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.unfbx.chatgpt.OpenAiClient;
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -65,12 +67,16 @@ public class GPTController {
             .apiHost(apiHost)
             .build();
 
-    Message systemMessage = Message.builder().role(Role.SYSTEM).content(systemContent).build();
-    // ChatCompletion systemChatCompletion =
+    // Message systemMessage = Message.builder().role(Role.SYSTEM).content(systemContent).build();
+    // Message contrastMessage = Message.builder().role(Role.SYSTEM).content(contrast).build();
+    // Message declareMessage = Message.builder().role(Role.SYSTEM).content(declare).build();
     //
-    // ChatCompletion.builder().messages(Arrays.asList(systemMessage)).model(ChatCompletion.Model.GPT_3_5_TURBO.getName()).build();
-    // ChatCompletionResponse systemCompletionResponse =
-    // openAiClient.chatCompletion(systemChatCompletion);
+    // List<Message> messageList = new ArrayList<>();
+    // messageList.add(systemMessage);
+    // messageList.add(contrastMessage);
+    // messageList.add(declareMessage);
+
+    Message systemMessage = Message.builder().role(Role.SYSTEM).content(all).build();
 
     List<Message> messageList = new ArrayList<>();
     messageList.add(systemMessage);
@@ -84,9 +90,17 @@ public class GPTController {
         ChatCompletion.builder()
             .messages(messageList)
             .model(ChatCompletion.Model.GPT_3_5_TURBO.getName())
+            .temperature(0.0)
+            .stream(false)
             .build();
     long l = System.currentTimeMillis();
-    ChatCompletionResponse chatCompletionResponse = openAiClient.chatCompletion(chatCompletion);
+    ChatCompletionResponse chatCompletionResponse;
+    try {
+      chatCompletionResponse = openAiClient.chatCompletion(chatCompletion);
+    } catch (Exception e) {
+      log.error(e.getMessage(), e);
+      throw new RuntimeException("API接口调用失败");
+    }
     long l1 = System.currentTimeMillis();
     System.out.println("耗时为：" + (l1 - l) / 1000);
     String content = null;
@@ -102,12 +116,23 @@ public class GPTController {
 
       for (Entry<String, Object> stringObjectEntry : entries1) {
         String key = stringObjectEntry.getKey();
+
         Object value = stringObjectEntry.getValue();
+        JSONArray objects = JSONUtil.parseArray(value);
+        ArrayList<String> strings = new ArrayList<>();
+        for (Object object : objects) {
+          String s = object.toString();
+          strings.add(s);
+        }
+        String musicName = StringUtils.join(strings, ",");
+        System.out.println(musicName);
+        String s = objects.toString();
+
         objectObjectHashMap.put("emotion", key);
-        objectObjectHashMap.put("musicname", value);
+        objectObjectHashMap.put("musicname", s);
       }
     } catch (Exception e) {
-      log.error(e.getMessage());
+      log.error(e.getMessage(), e);
       objectObjectHashMap.put("emotion", "中性");
       objectObjectHashMap.put("musicname", "中性01.mp3");
     }
