@@ -15,7 +15,7 @@ spring:
     show-sql: false
 
 server:
-  port: 6464
+  port: 64641
   #自定义异常
   error:
     include-exception: true
@@ -32,5 +32,5 @@ system:
     linux:
       /opt/deploy/emotion/img/
   gpt:
-    apiKey: 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
+    apiKey: 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
     apiHost: https://iglens.xyz/

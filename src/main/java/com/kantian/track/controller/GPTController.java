@@ -65,11 +65,12 @@ public class GPTController {
             .apiHost(apiHost)
             .build();
 
-    Message systemMessage = Message.builder().role(Role.SYSTEM).content(
-        systemContent).build();
+    Message systemMessage = Message.builder().role(Role.SYSTEM).content(systemContent).build();
     // ChatCompletion systemChatCompletion =
-    //     ChatCompletion.builder().messages(Arrays.asList(systemMessage)).model(ChatCompletion.Model.GPT_3_5_TURBO.getName()).build();
-    // ChatCompletionResponse systemCompletionResponse = openAiClient.chatCompletion(systemChatCompletion);
+    //
+    // ChatCompletion.builder().messages(Arrays.asList(systemMessage)).model(ChatCompletion.Model.GPT_3_5_TURBO.getName()).build();
+    // ChatCompletionResponse systemCompletionResponse =
+    // openAiClient.chatCompletion(systemChatCompletion);
 
     List<Message> messageList = new ArrayList<>();
     messageList.add(systemMessage);
@@ -80,30 +81,37 @@ public class GPTController {
     messageList.add(message);
 
     ChatCompletion chatCompletion =
-        ChatCompletion.builder().messages(messageList)
-            .model(ChatCompletion.Model.GPT_3_5_TURBO.getName()).build();
+        ChatCompletion.builder()
+            .messages(messageList)
+            .model(ChatCompletion.Model.GPT_3_5_TURBO.getName())
+            .build();
     long l = System.currentTimeMillis();
     ChatCompletionResponse chatCompletionResponse = openAiClient.chatCompletion(chatCompletion);
     long l1 = System.currentTimeMillis();
-    System.out.println("耗时为："+(l1 - l)/1000);
+    System.out.println("耗时为：" + (l1 - l) / 1000);
     String content = null;
     for (ChatChoice choice : chatCompletionResponse.getChoices()) {
       Message message1 = choice.getMessage();
       content = message1.getContent();
       System.out.println(content);
     }
-    JSONObject entries = JSONUtil.parseObj(content);
-    Set<Entry<String, Object>> entries1 = entries.entrySet();
-
     HashMap<String, Object> objectObjectHashMap = new HashMap<>();
-    for (Entry<String, Object> stringObjectEntry : entries1) {
-      String key = stringObjectEntry.getKey();
-      Object value = stringObjectEntry.getValue();
-      objectObjectHashMap.put("emotion", key);
-      objectObjectHashMap.put("musicname", value);
+    try {
+      JSONObject entries = JSONUtil.parseObj(content);
+      Set<Entry<String, Object>> entries1 = entries.entrySet();
+
+      for (Entry<String, Object> stringObjectEntry : entries1) {
+        String key = stringObjectEntry.getKey();
+        Object value = stringObjectEntry.getValue();
+        objectObjectHashMap.put("emotion", key);
+        objectObjectHashMap.put("musicname", value);
+      }
+    } catch (Exception e) {
+      log.error(e.getMessage());
+      objectObjectHashMap.put("emotion", "中性");
+      objectObjectHashMap.put("musicname", "中性01.mp3");
     }
 
     return ResponseEntity.ok(objectObjectHashMap);
   }
-
 }
