@@ -112,11 +112,6 @@ public class GPTController {
     }
     HashMap<String, Object> objectObjectHashMap = new HashMap<>();
 
-    if (content.contains("感谢 再会")){
-      //TODO 后续对接图片相对应api
-      objectObjectHashMap.put("emotion", "再会");
-      objectObjectHashMap.put("musicname", "感谢、再见.mp3");
-    }
     try {
       JSONObject entries = JSONUtil.parseObj(content);
       String emo = null;
@@ -167,6 +162,11 @@ public class GPTController {
       objectObjectHashMap.put("musicname", "平和01.mp3");
     }
 
+    if (msg.contains("感谢 再会")){
+      //TODO 后续对接图片相对应api
+      objectObjectHashMap.put("emotion", "再会");
+      objectObjectHashMap.put("musicname", "感谢、再见.mp3");
+    }
     return ResponseEntity.ok(objectObjectHashMap);
   }
 
