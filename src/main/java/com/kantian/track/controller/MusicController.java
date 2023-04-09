@@ -65,7 +65,7 @@ public class MusicController {
       }
       bufferedOutputStream.flush();
     } catch (IOException e) {
-      throw new RuntimeException("获取音乐失败：" + e.getMessage());
+      throw new RuntimeException("获取音乐："+fileName+" 失败：" + e.getMessage());
     }
   }
 }
